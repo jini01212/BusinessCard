@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>중복 명함 관리 - 명함 매니저먼트 시스템</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-brand">명함 매니저먼트 시스템</div>
+    <div class="navbar-menu">
+        <a href="/cards">명함 목록</a>
+        <a href="/cards/add">명함 추가</a>
+        <a href="/cards/upload">엑셀 업로드</a>
+        <a href="/cards/duplicates">중복 관리</a>
+        <div class="navbar-user">
+            <span th:text="${user.name} + '님'"></span>
+            <a href="/logout">로그아웃</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="card">
+        <h1>중복 명함 관리</h1>
+        <p class="info-text">
+            총 <strong th:text="${totalDuplicates}" class="text-danger">0</strong>개의 중복 명함이 발견되었습니다.
+        </p>
+    </div>
+
+    <div th:if="${totalDuplicates > 0}" class="clean-section">
+        <h2>중복 제거 옵션</h2>
+        <form th:action="@{/cards/duplicates/clean}" method="post" onsubmit="return confirm('정말 중복을 제거하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
+            <label class="strategy-option">
+                <input type="radio" name="strategy" value="oldest" checked>
+                <div>
+                    <strong>가장 오래된 명함만 남기기</strong>
+                    <small>처음 등록된 명함을 유지하고 나머지 삭제</small>
+                </div>
+            </label>
+
+            <label class="strategy-option">
+                <input type="radio" name="strategy" value="newest">
+                <div>
+                    <strong>가장 최근 명함만 남기기</strong>
+                    <small>가장 최근에 등록된 명함을 유지하고 나머지 삭제 (최신 정보 유지)</small>
+                </div>
+            </label>
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-danger">중복 제거 실행</button>
+                <a href="/cards" class="btn btn-secondary">취소</a>
+            </div>
+        </form>
+    </div>
+
+    <div th:if="${totalDuplicates == 0}" class="empty-state">
+        <h3>중복된 명함이 없습니다</h3>
+        <p>모든 명함이 고유합니다.</p>
+        <a href="/cards" class="btn btn-primary">명함 목록으로</a>
+    </div>
+
+    <div th:if="${totalDuplicates > 0}">
+        <h2>중복 명함 상세</h2>
+        <div th:each="entry : ${duplicates}" class="duplicate-group">
+            <div class="duplicate-header">
+                <div class="duplicate-key" th:text="${entry.key}"></div>
+                <div class="duplicate-count" th:text="${entry.value.size()} + '개'"></div>
+            </div>
+
+            <div class="duplicate-cards">
+                <div th:each="card, iterStat : ${entry.value}"
+                     th:class="'card-item ' + ${iterStat.first ? 'oldest' : (iterStat.last ? 'newest' : '')}">
+                    <div class="card-item-header">
+                        <div>
+                            <strong th:text="${card.name}" class="card-name"></strong>
+                            <span th:if="${iterStat.first}" class="label-oldest">가장 오래됨</span>
+                            <span th:if="${iterStat.last}" class="label-newest">가장 최근</span>
+                        </div>
+                        <span class="badge"
+                              th:class="'badge ' + ${card.category.name() == 'COMPANY' ? 'badge-company' :
+                                           (card.category.name() == 'SCHOOL' ? 'badge-school' :
+                                           (card.category.name() == 'ASSOCIATION' ? 'badge-association' : 'badge-government'))}"
+                              th:text="${card.category.displayName}"></span>
+                    </div>
+
+                    <div class="card-info">
+                        <div class="card-info-item">
+                            <strong>회사</strong>
+                            <span th:text="${card.company ?: '미입력'}"></span>
+                        </div>
+                        <div class="card-info-item">
+                            <strong>부서</strong>
+                            <span th:text="${card.department ?: '미입력'}"></span>
+                        </div>
+                        <div class="card-info-item">
+                            <strong>직함</strong>
+                            <span th:text="${card.position ?: '미입력'}"></span>
+                        </div>
+                        <div class="card-info-item">
+                            <strong>휴대폰</strong>
+                            <span th:text="${card.mobilePhone ?: '미입력'}"></span>
+                        </div>
+                        <div class="card-info-item">
+                            <strong>이메일</strong>
+                            <span th:text="${card.email ?: '미입력'}"></span>
+                        </div>
+                        <div class="card-info-item">
+                            <strong>등록일</strong>
+                            <span th:text="${#temporals.format(card.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                        </div>
+                    </div>
+
+                    <div class="duplicate-item-actions">
+                        <form th:action="@{/cards/duplicates/delete/{id}(id=${card.id})}" method="post" class="delete-form"
+                              onsubmit="return confirm('이 명함을 삭제하시겠습니까?');">
+                            <button type="submit" class="btn btn-danger btn-small">삭제</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>엑셀 업로드 - 명함 매니저먼트 시스템</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-brand">명함 매니저먼트 시스템</div>
+    <div class="navbar-menu">
+        <a href="/cards">명함 목록</a>
+        <a href="/cards/add">명함 추가</a>
+        <a href="/cards/upload">엑셀 업로드</a>
+        <a href="/cards/duplicates">중복 관리</a>
+        <div class="navbar-user">
+            <span th:text="${user.name} + '님'"></span>
+            <a href="/logout">로그아웃</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-narrow">
+    <div class="card">
+        <h1>명함 엑셀 업로드</h1>
+
+        <form th:action="@{/cards/upload}" method="post" enctype="multipart/form-data" id="uploadForm">
+            <div class="form-group">
+                <label for="category">분류 선택 *</label>
+                <select id="category" name="category" required>
+                    <option value="">선택하세요</option>
+                    <option th:each="cat : ${categories}"
+                            th:value="${cat}"
+                            th:text="${cat.displayName}"></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>엑셀 파일 선택 *</label>
+                <label for="file" class="file-upload-area" id="fileLabel">
+                    <input type="file" id="file" name="file" accept=".xlsx" required>
+                    <div class="file-upload-content">
+                        <div class="file-upload-text">엑셀 파일을 선택하세요</div>
+                        <div id="fileName" class="file-name-display"></div>
+                    </div>
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label>중복 처리 방법 *</label>
+                <div class="radio-group">
+                    <div class="checkbox-group">
+                        <input type="radio" id="skip" name="duplicateAction" value="skip" checked>
+                        <label for="skip">
+                            <strong>건너뛰기</strong>
+
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="radio" id="overwrite" name="duplicateAction" value="overwrite">
+                        <label for="overwrite">
+                            <strong>덮어쓰기</strong>
+
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="upload-actions">
+                <button type="submit" class="btn btn-primary btn-expand" id="submitBtn">업로드</button>
+                <button type="button" class="btn btn-secondary btn-expand" onclick="resetForm()">취소</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const fileInput = document.getElementById('file');
+    const fileLabel = document.getElementById('fileLabel');
+    const fileName = document.getElementById('fileName');
+    const submitBtn = document.getElementById('submitBtn');
+    const uploadForm = document.getElementById('uploadForm');
+
+    // 파일 선택 이벤트
+    fileInput.addEventListener('change', function(e) {
+        handleFiles(this.files);
+    });
+
+    // 드래그 오버 이벤트
+    fileLabel.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.classList.add('drag-over');
+    });
+
+    // 드래그 리브 이벤트
+    fileLabel.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.classList.remove('drag-over');
+    });
+
+    // 드롭 이벤트
+    fileLabel.addEventListener('drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.classList.remove('drag-over');
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            // 파일 입력에 드롭된 파일 설정
+            fileInput.files = files;
+            handleFiles(files);
+        }
+    });
+
+    function handleFiles(files) {
+        if (files.length > 0) {
+            const file = files[0];
+
+            // 파일 형식 검증
+            if (!file.name.endsWith('.xlsx')) {
+                alert('엑셀 파일(.xlsx)만 업로드 가능합니다.');
+                fileInput.value = '';
+                return;
+            }
+
+            fileName.textContent = '선택된 파일: ' + file.name;
+            fileLabel.classList.add('has-file');
+        } else {
+            fileName.textContent = '';
+            fileLabel.classList.remove('has-file');
+        }
+    }
+
+    uploadForm.addEventListener('submit', function() {
+        submitBtn.disabled = true;
+        submitBtn.textContent = '업로드 중...';
+    });
+
+    function resetForm() {
+        if (confirm('입력한 내용이 모두 삭제됩니다. 계속하시겠습니까?')) {
+            uploadForm.reset();
+            fileName.textContent = '';
+            fileLabel.classList.remove('has-file');
+        }
+    }
+</script>
+</body>
+</html>

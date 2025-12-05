@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>명함 상세 - 명함 매니저먼트 시스템</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-brand">명함 매니저먼트 시스템</div>
+    <div class="navbar-menu">
+        <a href="/cards/list">명함 목록</a>
+        <a href="/cards/add">명함 추가</a>
+        <a href="/cards/upload">엑셀 업로드</a>
+        <a href="/cards/duplicates">중복 관리</a>
+        <div class="navbar-user">
+            <span th:text="${user.name} + '님'"></span>
+            <a href="/logout">로그아웃</a>
+        </div>
+    </div>
+</nav>
+
+<div class="detail-container">
+    <div class="detail-card">
+        <div class="navigation-buttons">
+            <a th:if="${previousCard != null}"
+               th:href="@{/cards/{id}(id=${previousCard.id})}"
+               class="nav-btn">← 이전 명함</a>
+            <button th:if="${previousCard == null}" class="nav-btn" disabled>← 이전 명함</button>
+
+            <a th:if="${nextCard != null}"
+               th:href="@{/cards/{id}(id=${nextCard.id})}"
+               class="nav-btn">다음 명함 →</a>
+            <button th:if="${nextCard == null}" class="nav-btn" disabled>다음 명함 →</button>
+        </div>
+
+        <div class="detail-header">
+            <h1 th:text="${card.name}">홍길동</h1>
+            <div class="company" th:text="${card.company}">ABC 회사</div>
+        </div>
+
+        <div class="detail-body">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">부서</div>
+                    <div class="info-value"
+                         th:text="${card.department != null && !#strings.isEmpty(card.department)} ? ${card.department} : '미입력'"
+                         th:classappend="${card.department == null || #strings.isEmpty(card.department)} ? 'empty' : ''"></div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">직함</div>
+                    <div class="info-value"
+                         th:text="${card.position != null && !#strings.isEmpty(card.position)} ? ${card.position} : '미입력'"
+                         th:classappend="${card.position == null || #strings.isEmpty(card.position)} ? 'empty' : ''"></div>
+                </div>
+
+                <div class="info-item full-width">
+                    <div class="info-label">주소</div>
+                    <div class="info-value"
+                         th:text="${card.address != null && !#strings.isEmpty(card.address)} ? ${card.address} : '미입력'"
+                         th:classappend="${card.address == null || #strings.isEmpty(card.address)} ? 'empty' : ''"></div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">근무처 전화</div>
+                    <div class="info-value"
+                         th:text="${card.officePhone != null && !#strings.isEmpty(card.officePhone)} ? ${card.officePhone} : '미입력'"
+                         th:classappend="${card.officePhone == null || #strings.isEmpty(card.officePhone)} ? 'empty' : ''"></div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">근무처 팩스</div>
+                    <div class="info-value"
+                         th:text="${card.officeFax != null && !#strings.isEmpty(card.officeFax)} ? ${card.officeFax} : '미입력'"
+                         th:classappend="${card.officeFax == null || #strings.isEmpty(card.officeFax)} ? 'empty' : ''"></div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">휴대폰</div>
+                    <div class="info-value"
+                         th:text="${card.mobilePhone != null && !#strings.isEmpty(card.mobilePhone)} ? ${card.mobilePhone} : '미입력'"
+                         th:classappend="${card.mobilePhone == null || #strings.isEmpty(card.mobilePhone)} ? 'empty' : ''"></div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">이메일</div>
+                    <div class="info-value"
+                         th:text="${card.email != null && !#strings.isEmpty(card.email)} ? ${card.email} : '미입력'"
+                         th:classappend="${card.email == null || #strings.isEmpty(card.email)} ? 'empty' : ''"></div>
+                </div>
+
+                <div class="info-item full-width">
+                    <div class="info-label">웹사이트</div>
+                    <div class="info-value"
+                         th:text="${card.website != null && !#strings.isEmpty(card.website)} ? ${card.website} : '미입력'"
+                         th:classappend="${card.website == null || #strings.isEmpty(card.website)} ? 'empty' : ''"></div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">분류</div>
+                    <div class="info-value">
+                        <span th:class="'category-badge-large ' + ${card.category.name() == 'COMPANY' ? 'badge-company' :
+                                   (card.category.name() == 'SCHOOL' ? 'badge-school' :
+                                   (card.category.name() == 'ASSOCIATION' ? 'badge-association' : 'badge-government'))}"
+                              th:text="${card.category.displayName}"></span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">등록일</div>
+                    <div class="info-value" th:text="${#temporals.format(card.createdAt, 'yyyy-MM-dd HH:mm')}"></div>
+                </div>
+
+                <div class="info-item full-width" th:if="${card.notes != null && !#strings.isEmpty(card.notes)}">
+                    <div class="info-label">비고</div>
+                    <div class="info-value" th:text="${card.notes}"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a th:href="@{/cards/list(category=${lastSearchCategory},keyword=${lastSearchKeyword},searchField=${lastSearchField},sortBy=${lastSearchSortBy})}"
+               class="btn btn-secondary">목록으로</a>
+            <a th:href="@{/cards/edit/{id}(id=${card.id})}" class="btn btn-primary">수정</a>
+            <form th:action="@{/cards/delete/{id}(id=${card.id})}" method="post" class="form-inline"
+                  onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                <input type="hidden" name="fromView" value="true">
+                <button type="submit" class="btn btn-danger btn-full">삭제</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

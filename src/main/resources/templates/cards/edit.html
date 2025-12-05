@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>명함 수정 - 명함 매니저먼트 시스템</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-brand">명함 매니저먼트 시스템</div>
+    <div class="navbar-menu">
+        <a href="/cards">명함 목록</a>
+        <a href="/cards/add">명함 추가</a>
+        <a href="/cards/upload">엑셀 업로드</a>
+        <div class="navbar-user">
+            <span th:text="${user.name} + '님'"></span>
+            <a href="/logout">로그아웃</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-narrow">
+    <div class="card">
+        <h1>명함 수정</h1>
+
+        <form th:action="@{/cards/edit/{id}(id=${card.id})}" method="post">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">이름 *</label>
+                    <input type="text" id="name" name="name" th:value="${card.name}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">분류 *</label>
+                    <select id="category" name="category" required>
+                        <option th:each="cat : ${categories}"
+                                th:value="${cat}"
+                                th:text="${cat.displayName}"
+                                th:selected="${cat == card.category}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="company">회사</label>
+                    <input type="text" id="company" name="company" th:value="${card.company}">
+                </div>
+
+                <div class="form-group">
+                    <label for="department">부서</label>
+                    <input type="text" id="department" name="department" th:value="${card.department}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="position">직함</label>
+                <input type="text" id="position" name="position" th:value="${card.position}">
+            </div>
+
+            <div class="form-group">
+                <label for="address">주소</label>
+                <input type="text" id="address" name="address" th:value="${card.address}">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="officePhone">근무처 전화</label>
+                    <input type="text" id="officePhone" name="officePhone" th:value="${card.officePhone}" placeholder="02-1234-5678">
+                </div>
+
+                <div class="form-group">
+                    <label for="officeFax">근무처 팩스</label>
+                    <input type="text" id="officeFax" name="officeFax" th:value="${card.officeFax}" placeholder="02-1234-5679">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="mobilePhone">휴대폰</label>
+                    <input type="text" id="mobilePhone" name="mobilePhone" th:value="${card.mobilePhone}" placeholder="010-1234-5678">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">이메일</label>
+                    <input type="email" id="email" name="email" th:value="${card.email}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="website">웹사이트</label>
+                <input type="text" id="website" name="website" th:value="${card.website}">
+            </div>
+
+            <div class="form-group">
+                <label for="notes">비고</label>
+                <textarea id="notes" name="notes" th:text="${card.notes}"></textarea>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">수정</button>
+                <a href="/cards" class="btn btn-secondary">취소</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
