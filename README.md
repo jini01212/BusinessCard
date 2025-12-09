@@ -158,7 +158,7 @@ spring.jpa.show-sql=true
 
 ### 5. 접속
 
-브라우저에서 `http://localhost:8081` 접속
+브라우저에서 `http://localhost:8080` 접속
 
 ## 엑셀 업로드 형식
 
