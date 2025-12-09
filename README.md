@@ -81,42 +81,6 @@
 - Gradle
 
 
-## 데이터베이스 스키마
-
-### users 테이블
-```sql
-CREATE TABLE users (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(100) NOT NULL,
-    name VARCHAR(50) NOT NULL,
-    created_at DATETIME,
-    last_login DATETIME
-);
-```
-
-### business_card 테이블
-```sql
-CREATE TABLE business_card (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    company VARCHAR(100),
-    department VARCHAR(50),
-    position VARCHAR(50),
-    address VARCHAR(800),
-    office_phone VARCHAR(500),
-    office_fax VARCHAR(500),
-    mobile_phone VARCHAR(500),
-    email VARCHAR(100),
-    website VARCHAR(100),
-    category VARCHAR(20) NOT NULL,
-    notes VARCHAR(500),
-    user_id BIGINT NOT NULL,
-    created_at DATETIME,
-    updated_at DATETIME,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
-```
 
 ## 설치 및 실행
 
@@ -125,14 +89,7 @@ CREATE TABLE business_card (
 - MySQL 8.0 이상
 - Gradle 8.x
 
-### 2. 데이터베이스 설정
-
-MySQL에서 데이터베이스 생성:
-```sql
-CREATE DATABASE card_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
-### 3. 애플리케이션 설정
+### 2. 애플리케이션 설정
 
 `src/main/resources/application.properties` 파일 수정:
 ```properties
@@ -146,19 +103,10 @@ spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 ```
 
-### 4. 빌드 및 실행
-
-```bash
-# 프로젝트 빌드
-./gradlew build
-
-# 애플리케이션 실행
-./gradlew bootRun
-```
-
-### 5. 접속
+### 3. 접속
 
 브라우저에서 `http://localhost:8080` 접속
+
 
 ## 엑셀 업로드 형식
 
